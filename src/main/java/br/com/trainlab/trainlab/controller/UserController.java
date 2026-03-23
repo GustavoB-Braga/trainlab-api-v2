@@ -1,7 +1,8 @@
 package br.com.trainlab.trainlab.controller;
 
-import br.com.trainlab.trainlab.dto.User.UserRequestDto;
-import br.com.trainlab.trainlab.dto.User.UserResponseDto;
+import br.com.trainlab.trainlab.dto.user.UserRequestDto;
+import br.com.trainlab.trainlab.dto.user.UserResponseDto;
+import br.com.trainlab.trainlab.dto.user.UserUpdateRequestDto;
 import br.com.trainlab.trainlab.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class UserController {
     //------UPDATE USER--------\\
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody @Valid UserRequestDto dto) {
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody @Valid UserUpdateRequestDto dto) {
         UserResponseDto response = service.updateUser(id, dto);
 
         return ResponseEntity.ok(response);

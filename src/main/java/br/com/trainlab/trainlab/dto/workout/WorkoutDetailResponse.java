@@ -1,4 +1,4 @@
-package br.com.trainlab.trainlab.dto.Workout;
+package br.com.trainlab.trainlab.dto.workout;
 
 import br.com.trainlab.trainlab.dto.exercise.ExerciseResponseDto;
 import br.com.trainlab.trainlab.model.enums.Level;

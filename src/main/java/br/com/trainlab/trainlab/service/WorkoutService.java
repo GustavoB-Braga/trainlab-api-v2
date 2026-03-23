@@ -1,8 +1,8 @@
 package br.com.trainlab.trainlab.service;
 
-import br.com.trainlab.trainlab.dto.Workout.WorkoutDetailResponse;
-import br.com.trainlab.trainlab.dto.Workout.WorkoutRequestDto;
-import br.com.trainlab.trainlab.dto.Workout.WorkoutResponseDto;
+import br.com.trainlab.trainlab.dto.workout.WorkoutDetailResponse;
+import br.com.trainlab.trainlab.dto.workout.WorkoutRequestDto;
+import br.com.trainlab.trainlab.dto.workout.WorkoutResponseDto;
 import br.com.trainlab.trainlab.dto.exercise.ExerciseResponseDto;
 import br.com.trainlab.trainlab.model.User;
 import br.com.trainlab.trainlab.model.Workout;

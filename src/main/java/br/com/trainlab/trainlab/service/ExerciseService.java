@@ -2,6 +2,7 @@ package br.com.trainlab.trainlab.service;
 
 import br.com.trainlab.trainlab.dto.exercise.ExerciseRequestDto;
 import br.com.trainlab.trainlab.dto.exercise.ExerciseResponseDto;
+import br.com.trainlab.trainlab.exception.ResourceNotFoundException;
 import br.com.trainlab.trainlab.model.Exercise;
 import br.com.trainlab.trainlab.model.Workout;
 import br.com.trainlab.trainlab.repository.ExerciseRepository;
@@ -26,8 +27,7 @@ public class ExerciseService {
     public ExerciseResponseDto createExercise(Long userId, Long workoutId, ExerciseRequestDto dto) {
 
         Workout workout = workoutRepository.findByIdAndUserId(workoutId, userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Usuário ou treino não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário ou treino não encontrado"));
 
         Exercise exercise = new Exercise();
         exercise.setName(dto.name());
@@ -49,7 +49,7 @@ public class ExerciseService {
     public List<ExerciseResponseDto> listExercises(Long userId, Long workoutId) {
 
         Workout workout = workoutRepository.findByIdAndUserId(workoutId, userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Treino não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Treino não encontrado"));
 
         List<Exercise> exercises = repository.findAllByWorkoutId(workoutId);
 
@@ -66,13 +66,10 @@ public class ExerciseService {
     public ExerciseResponseDto updateExercise(Long userId, Long workoutId, Long exerciseId, ExerciseRequestDto dto) {
 
         Workout workout = workoutRepository.findByIdAndUserId(workoutId, userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Usuário ou treino não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário ou treino não encontrado"));
 
         Exercise exercise = repository.findByIdAndWorkoutId(exerciseId, workoutId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Exercício não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Exercício não encontrado"));
 
         exercise.setName(dto.name());
         exercise.setMuscleGroup(dto.muscleGroup());
@@ -92,13 +89,10 @@ public class ExerciseService {
 
     public void deleteExercise(Long userId, Long workoutId, Long exerciseId) {
         Workout workout = workoutRepository.findByIdAndUserId(workoutId, userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Usuário ou treino não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário ou treino não encontrado"));
 
         Exercise exercise = repository.findByIdAndWorkoutId(exerciseId, workoutId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Exercício não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Exercício não encontrado"));
 
         repository.delete(exercise);
     }
