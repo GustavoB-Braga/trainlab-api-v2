@@ -1,0 +1,105 @@
+package br.com.trainlab.trainlab.service;
+
+import br.com.trainlab.trainlab.dto.exercise.ExerciseRequestDto;
+import br.com.trainlab.trainlab.dto.exercise.ExerciseResponseDto;
+import br.com.trainlab.trainlab.model.Exercise;
+import br.com.trainlab.trainlab.model.Workout;
+import br.com.trainlab.trainlab.repository.ExerciseRepository;
+import br.com.trainlab.trainlab.repository.WorkoutRepository;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+
+@Service
+public class ExerciseService {
+
+    @Autowired
+    private ExerciseRepository repository;
+
+    @Autowired
+    WorkoutRepository workoutRepository;
+
+    public ExerciseResponseDto createExercise(Long userId, Long workoutId, ExerciseRequestDto dto) {
+
+        Workout workout = workoutRepository.findByIdAndUserId(workoutId, userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Usuário ou treino não encontrado"));
+
+        Exercise exercise = new Exercise();
+        exercise.setName(dto.name());
+        exercise.setMuscleGroup(dto.muscleGroup());
+        exercise.setSets(dto.sets());
+        exercise.setRepetitions(dto.repetitions());
+        exercise.setWorkout(workout);
+
+        var savedExercise = repository.save(exercise);
+        return new ExerciseResponseDto(
+                savedExercise.getId(),
+                savedExercise.getName(),
+                savedExercise.getMuscleGroup(),
+                savedExercise.getSets(),
+                savedExercise.getRepetitions()
+        );
+    }
+
+    public List<ExerciseResponseDto> listExercises(Long userId, Long workoutId) {
+
+        Workout workout = workoutRepository.findByIdAndUserId(workoutId, userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Treino não encontrado"));
+
+        List<Exercise> exercises = repository.findAllByWorkoutId(workoutId);
+
+        return exercises.stream()
+                .map(ex -> new ExerciseResponseDto(
+                        ex.getId(),
+                        ex.getName(),
+                        ex.getMuscleGroup(),
+                        ex.getSets(),
+                        ex.getRepetitions())
+                ).toList();
+    }
+
+    public ExerciseResponseDto updateExercise(Long userId, Long workoutId, Long exerciseId, ExerciseRequestDto dto) {
+
+        Workout workout = workoutRepository.findByIdAndUserId(workoutId, userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Usuário ou treino não encontrado"));
+
+        Exercise exercise = repository.findByIdAndWorkoutId(exerciseId, workoutId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Exercício não encontrado"));
+
+        exercise.setName(dto.name());
+        exercise.setMuscleGroup(dto.muscleGroup());
+        exercise.setSets(dto.sets());
+        exercise.setRepetitions(dto.repetitions());
+
+        Exercise updated = repository.save(exercise);
+
+        return new ExerciseResponseDto(
+                updated.getId(),
+                updated.getName(),
+                updated.getMuscleGroup(),
+                updated.getSets(),
+                updated.getRepetitions()
+        );
+    }
+
+    public void deleteExercise(Long userId, Long workoutId, Long exerciseId) {
+        Workout workout = workoutRepository.findByIdAndUserId(workoutId, userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Usuário ou treino não encontrado"));
+
+        Exercise exercise = repository.findByIdAndWorkoutId(exerciseId, workoutId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Exercício não encontrado"));
+
+        repository.delete(exercise);
+    }
+}
