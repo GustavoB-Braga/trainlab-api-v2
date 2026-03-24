@@ -24,6 +24,10 @@ public class UserService {
 
     public UserResponseDto createUser(UserRequestDto dto) {
 
+        if (!dto.password().equals(dto.confirmPassword())) {
+            throw new BusinessException("As senhas não coincidem");
+        }
+
         if (repository.existsByEmail(dto.email())) {
             throw new BusinessException("Email já cadastrado");
         }
