@@ -1,0 +1,13 @@
+package br.com.trainlab.trainlab.config;
+
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+public class CorsConfiguration implements WebMvcConfigurer {
+    public void addCorsMappings(CorsRegistry registry) {
+
+        registry.addMapping("/**")
+                .allowedOrigins("http://192.168.15.54:3000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD");
+    }
+}
