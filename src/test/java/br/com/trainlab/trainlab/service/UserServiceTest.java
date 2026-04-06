@@ -138,6 +138,8 @@ class UserServiceTest {
 
     }
 
+    //CREATE TESTS
+
     @Test
     void shouldDeleteUserSuccessfully() {
 
@@ -163,6 +165,6 @@ class UserServiceTest {
         //ASSERT + ACT
         assertThrows(ResourceNotFoundException.class, () -> service.deleteUser(1L));
 //        then(repository).should(never()).delete(any());
-        verify(repository,never()).delete(any());
+        verify(repository, never()).delete(any());
     }
 }
