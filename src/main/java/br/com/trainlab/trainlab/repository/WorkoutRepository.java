@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface WorkoutRepository extends JpaRepository<Workout, Long> {
 
-    Optional<Workout> findByIdAndUser(Long id, Long userId);
+//    Optional<Workout> findByIdAndUserId(Long id, Long userId);
 
     void deleteByIdAndUserId(Long workoutId, long userId);
 

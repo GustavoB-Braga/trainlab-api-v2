@@ -33,12 +33,12 @@ public class ExerciseController {
     //------READ EXERCISE--------\\
 
     @GetMapping
-    public ResponseEntity<List<ExerciseResponseDto>> createExercise(
+    public ResponseEntity<List<ExerciseResponseDto>> listExercises(
             @PathVariable Long userId,
             @PathVariable Long workoutId) {
         var response = service.listExercises(userId, workoutId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     //------UPDATE EXERCISE--------\\
