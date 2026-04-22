@@ -1,6 +1,6 @@
 package br.com.trainlab.trainlab.service;
 
-import br.com.trainlab.trainlab.dto.workout.WorkoutDetailResponse;
+import br.com.trainlab.trainlab.dto.workout.WorkoutDetailResponseDto;
 import br.com.trainlab.trainlab.dto.workout.WorkoutRequestDto;
 import br.com.trainlab.trainlab.dto.workout.WorkoutResponseDto;
 import br.com.trainlab.trainlab.dto.exercise.ExerciseResponseDto;
@@ -65,7 +65,7 @@ public class WorkoutService {
                 )).toList();
     }
 
-    public WorkoutDetailResponse getWorkoutDetail(Long userId, Long workoutId) {
+    public WorkoutDetailResponseDto getWorkoutDetail(Long userId, Long workoutId) {
         Workout workout = repository.findByIdAndUserId(workoutId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Treino não encontrado"));
 
@@ -79,7 +79,7 @@ public class WorkoutService {
                         ex.getRepetitions()
                 )).toList();
 
-        return new WorkoutDetailResponse(
+        return new WorkoutDetailResponseDto(
                 workout.getId(),
                 workout.getName(),
                 workout.getDescription(),
@@ -93,7 +93,7 @@ public class WorkoutService {
 
     public WorkoutResponseDto updateWorkout(Long userId, Long workoutId, @Valid WorkoutRequestDto dto) {
 
-        Workout workout = repository.findByIdAndUser(workoutId, userId)
+        Workout workout = repository.findByIdAndUserId(workoutId, userId)
                 .orElseThrow(() -> new RuntimeException("Workout não encontrado"));
 
         workout.setName(dto.name());

@@ -7,7 +7,7 @@ import br.com.trainlab.trainlab.model.enums.WorkoutType;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record WorkoutDetailResponse(
+public record WorkoutDetailResponseDto(
         Long id,
         String name,
         String description,
