@@ -53,7 +53,7 @@ class WorkoutServiceTest {
         given(repository.save(any(Workout.class))).willReturn(savedWorkout);
 
         //ACT
-        var response = service.createWorkout(1L, requestDto);
+        var response = service.createWorkout("email@teste.com", requestDto);
 
         //ASSERT
         assertNotNull(response);
