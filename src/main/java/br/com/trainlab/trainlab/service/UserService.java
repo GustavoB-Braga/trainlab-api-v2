@@ -48,19 +48,20 @@ public class UserService {
 
     //------UPDATE USER--------\\
 
-    public UserResponseDto updateUser(Long id, UserUpdateRequestDto dto) {
+    public UserResponseDto updateUser(String email, UserUpdateRequestDto dto) {
 
-        if (repository.existsByEmailAndIdNot(dto.email(), id)) {
+        User user = repository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+        if (repository.existsByEmailAndIdNot(dto.email(), user.getId())) {
             throw new BusinessException("Email já cadastrado");
         }
-
-        User user = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         user.setName(dto.name());
         user.setEmail(dto.email());
 
         repository.save(user);
+
         return new UserResponseDto(
                 user.getId(),
                 user.getName(),
@@ -70,11 +71,23 @@ public class UserService {
 
     //------DELETE USER--------\\
 
-    public void deleteUser(Long id) {
+    public void deleteUser(String email) {
 
-        User user = repository.findById(id)
+        User user = repository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         repository.delete(user);
+    }
+
+    public UserResponseDto getMe(String email) {
+
+        User user = repository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+        return new UserResponseDto(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
+        );
     }
 }

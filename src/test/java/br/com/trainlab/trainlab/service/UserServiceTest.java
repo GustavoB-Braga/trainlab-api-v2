@@ -24,26 +24,22 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
+
     @InjectMocks
     private UserService service;
+
     @Mock
     private UserRepository repository;
+
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    private UserResponseDto userResponseDto;
-
-    private UserRequestDto dto;
-    private UserUpdateRequestDto updateRequestDto;
-
-    private User user;
-
-    //CREATE TESTS
+    // ================= CREATE =================
 
     @Test
     void shouldCreateUserSuccessfully() {
-        //ARRANGE
-        this.dto = new UserRequestDto("Gustavo", "teste@gmail.com", "123456", "123456");
+        var dto = new UserRequestDto("Gustavo", "teste@gmail.com", "123456", "123456");
+
         given(repository.existsByEmail(dto.email())).willReturn(false);
         given(passwordEncoder.encode(dto.password())).willReturn("senha_protegida");
 
@@ -55,116 +51,104 @@ class UserServiceTest {
 
         given(repository.save(any(User.class))).willReturn(savedUser);
 
-        //ACT
         var response = service.createUser(dto);
 
-        //ASSERT
         assertNotNull(response);
         assertEquals("Gustavo", response.nome());
         assertEquals("teste@gmail.com", response.email());
+
         then(repository).should(times(1)).save(any(User.class));
     }
 
     @Test
     void shouldThrowExceptionWhenPasswordsDoNotMatch() {
-        //ARRANGE
-        this.dto = new UserRequestDto("Gustavo", "teste@gmail.com", "123456", "12345");
+        var dto = new UserRequestDto("Gustavo", "teste@gmail.com", "123456", "12345");
 
-        //ASSERT + ACT
         assertThrows(BusinessException.class, () -> service.createUser(dto));
         then(repository).should(never()).save(any());
     }
 
     @Test
     void shouldThrowExceptionWhenEmailAlreadyExists() {
-        //ARRANGE
-        this.dto = new UserRequestDto("Gustavo", "teste@gmail.com", "123456", "123456");
+        var dto = new UserRequestDto("Gustavo", "teste@gmail.com", "123456", "123456");
+
         given(repository.existsByEmail(dto.email())).willReturn(true);
 
-        //ASSERT + ACT
         assertThrows(BusinessException.class, () -> service.createUser(dto));
         then(repository).should(never()).save(any());
     }
 
-    //UPDATE TESTS
+    // ================= UPDATE =================
 
     @Test
-    void shoudlUpdateUserSuccessfully() {
-        //ARRANGE
-        this.user = new User();
+    void shouldUpdateUserSuccessfully() {
+        var user = new User();
         user.setId(1L);
         user.setName("nome errado");
         user.setEmail("email errado");
 
-        this.updateRequestDto = new UserUpdateRequestDto("Gustavo Braga", "teste@gmail.com");
+        var dto = new UserUpdateRequestDto("Gustavo Braga", "teste@gmail.com");
 
-        given(repository.existsByEmailAndIdNot(updateRequestDto.email(), 1L)).willReturn(false);
-        given(repository.findById(1L)).willReturn(Optional.of(user));
-
-
+        given(repository.findByEmail("teste@gmail.com")).willReturn(Optional.of(user));
+        given(repository.existsByEmailAndIdNot(dto.email(), user.getId())).willReturn(false);
         given(repository.save(any())).willReturn(user);
 
-        //ACT
-        UserResponseDto response = service.updateUser(1L, updateRequestDto);
+        var response = service.updateUser("teste@gmail.com", dto);
 
-        //ASSERT
-        assertEquals(response.id(), user.getId());
-        assertEquals(response.nome(), user.getName());
-        assertEquals(response.email(), user.getEmail());
+        assertEquals(user.getId(), response.id());
+        assertEquals(user.getName(), response.nome());
+        assertEquals(user.getEmail(), response.email());
 
         then(repository).should(times(1)).save(user);
     }
 
     @Test
     void shouldThrowExceptionWhenEmailAlreadyExistsOnUpdate() {
-        //ARRANGE
-        this.updateRequestDto = new UserUpdateRequestDto("Gustavo Braga", "teste@gmail.com");
-        given(repository.existsByEmailAndIdNot(updateRequestDto.email(), 1L)).willReturn(true);
+        var user = new User();
+        user.setId(1L);
 
-        //ASSERT + ACT
-        assertThrows(BusinessException.class, () -> service.updateUser(1L, updateRequestDto));
+        var dto = new UserUpdateRequestDto("Gustavo Braga", "teste@gmail.com");
+
+        given(repository.findByEmail("teste@gmail.com")).willReturn(Optional.of(user));
+        given(repository.existsByEmailAndIdNot(dto.email(), user.getId())).willReturn(true);
+
+        assertThrows(BusinessException.class, () -> service.updateUser("teste@gmail.com", dto));
         then(repository).should(never()).save(any());
     }
 
     @Test
     void shouldThrowExceptionWhenUserNotFoundOnUpdate() {
-        //ARRANGE
-        this.updateRequestDto = new UserUpdateRequestDto("Gustavo Braga", "teste@gmail.com");
-        given(repository.existsByEmailAndIdNot(updateRequestDto.email(), 1L)).willReturn(false);
+        var dto = new UserUpdateRequestDto("Gustavo Braga", "teste@gmail.com");
 
-        //ASSERT + ACT
-        assertThrows(ResourceNotFoundException.class, () -> service.updateUser(1L, updateRequestDto));
+        given(repository.findByEmail("teste@gmail.com")).willReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> service.updateUser("teste@gmail.com", dto));
+
         then(repository).should(never()).save(any());
-
     }
 
-    //CREATE TESTS
+    // ================= DELETE =================
 
     @Test
     void shouldDeleteUserSuccessfully() {
-
-        //ARRANGE
-        User user = new User();
+        var user = new User();
         user.setId(1L);
 
-        given(repository.findById(1L)).willReturn(Optional.of(user));
+        given(repository.findByEmail("teste@gmail.com")).willReturn(Optional.of(user));
 
-        //ACT
-        service.deleteUser(1L);
+        service.deleteUser("teste@gmail.com");
 
-        //ASSERT
-        then(repository).should(times(1)).delete(any());
-
+        then(repository).should(times(1)).delete(user);
     }
 
     @Test
     void shouldThrowExceptionWhenUserNotFoundOnDelete() {
-        //ARRANGE
-        given(repository.findById(1L)).willReturn(Optional.empty());
+        given(repository.findByEmail("teste@gmail.com")).willReturn(Optional.empty());
 
-        //ASSERT + ACT
-        assertThrows(ResourceNotFoundException.class, () -> service.deleteUser(1L));
-//        then(repository).should(never()).delete(any());
+        assertThrows(ResourceNotFoundException.class,
+                () -> service.deleteUser("teste@gmail.com"));
+
         verify(repository, never()).delete(any());
     }
 }
