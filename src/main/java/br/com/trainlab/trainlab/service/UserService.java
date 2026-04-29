@@ -4,6 +4,7 @@ import br.com.trainlab.trainlab.dto.user.UserRequestDto;
 import br.com.trainlab.trainlab.dto.user.UserResponseDto;
 import br.com.trainlab.trainlab.dto.user.UserUpdateRequestDto;
 import br.com.trainlab.trainlab.exception.BusinessException;
+import br.com.trainlab.trainlab.exception.ErrorMessage;
 import br.com.trainlab.trainlab.exception.ResourceNotFoundException;
 import br.com.trainlab.trainlab.model.User;
 import br.com.trainlab.trainlab.repository.UserRepository;
@@ -51,7 +52,7 @@ public class UserService {
     public UserResponseDto updateUser(String email, UserUpdateRequestDto dto) {
 
         User user = repository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         if (repository.existsByEmailAndIdNot(dto.email(), user.getId())) {
             throw new BusinessException("Email já cadastrado");
@@ -74,7 +75,7 @@ public class UserService {
     public void deleteUser(String email) {
 
         User user = repository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         repository.delete(user);
     }
@@ -82,7 +83,7 @@ public class UserService {
     public UserResponseDto getMe(String email) {
 
         User user = repository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         return new UserResponseDto(
                 user.getId(),

@@ -1,3 +1,5 @@
+package br.com.trainlab.trainlab.controller;
+
 import br.com.trainlab.trainlab.dto.user.UserRequestDto;
 import br.com.trainlab.trainlab.dto.user.UserResponseDto;
 import br.com.trainlab.trainlab.dto.user.UserUpdateRequestDto;

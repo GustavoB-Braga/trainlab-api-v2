@@ -49,6 +49,16 @@ public class ExerciseController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @GetMapping("/{exerciseId}")
+    public ResponseEntity<ExerciseResponseDto> getExercise(@PathVariable Long workoutId, @PathVariable Long exerciseId) {
+
+        String email = getAuthenticatedUserEmail();
+
+        var response = service.getExercise(email,workoutId,exerciseId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @PutMapping("/{exerciseId}")
     public ResponseEntity<ExerciseResponseDto> updateExercise(
             @PathVariable Long workoutId,

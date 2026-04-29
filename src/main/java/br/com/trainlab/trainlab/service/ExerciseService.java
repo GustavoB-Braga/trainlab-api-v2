@@ -2,6 +2,7 @@ package br.com.trainlab.trainlab.service;
 
 import br.com.trainlab.trainlab.dto.exercise.ExerciseRequestDto;
 import br.com.trainlab.trainlab.dto.exercise.ExerciseResponseDto;
+import br.com.trainlab.trainlab.exception.ErrorMessage;
 import br.com.trainlab.trainlab.exception.ResourceNotFoundException;
 import br.com.trainlab.trainlab.model.Exercise;
 import br.com.trainlab.trainlab.model.Workout;
@@ -24,7 +25,7 @@ public class ExerciseService {
     public ExerciseResponseDto createExercise(String email, Long workoutId, ExerciseRequestDto dto) {
 
         Workout workout = workoutRepository.findByIdAndUserEmail(workoutId, email)
-                .orElseThrow(() -> new ResourceNotFoundException("User ou Workout não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.WORKOUT_NOT_FOUND));
 
         Exercise exercise = new Exercise();
         exercise.setName(dto.name());
@@ -46,7 +47,7 @@ public class ExerciseService {
     public List<ExerciseResponseDto> listExercises(String email, Long workoutId) {
 
         Workout workout = workoutRepository.findByIdAndUserEmail(workoutId, email)
-                .orElseThrow(() -> new ResourceNotFoundException("Workout não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.WORKOUT_NOT_FOUND));
 
         List<Exercise> exercises = repository.findAllByWorkoutId(workoutId);
 
@@ -63,10 +64,10 @@ public class ExerciseService {
     public ExerciseResponseDto updateExercise(String email, Long workoutId, Long exerciseId, ExerciseRequestDto dto) {
 
         Workout workout = workoutRepository.findByIdAndUserEmail(workoutId, email)
-                .orElseThrow(() -> new ResourceNotFoundException("User ou Workout não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.WORKOUT_NOT_FOUND));
 
         Exercise exercise = repository.findByIdAndWorkoutId(exerciseId, workoutId)
-                .orElseThrow(() -> new ResourceNotFoundException("Exercise não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.EXERCISE_NOT_FOUND));
 
         exercise.setName(dto.name());
         exercise.setMuscleGroup(dto.muscleGroup());
@@ -86,11 +87,27 @@ public class ExerciseService {
 
     public void deleteExercise(String email, Long workoutId, Long exerciseId) {
         Workout workout = workoutRepository.findByIdAndUserEmail(workoutId, email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário ou treino não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.WORKOUT_NOT_FOUND));
 
         Exercise exercise = repository.findByIdAndWorkoutId(exerciseId, workoutId)
-                .orElseThrow(() -> new ResourceNotFoundException("Exercício não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.EXERCISE_NOT_FOUND));
 
         repository.delete(exercise);
+    }
+
+    public ExerciseResponseDto getExercise(String email, Long workoutId, Long exerciseId) {
+
+        Workout workout = workoutRepository.findByIdAndUserEmail(workoutId, email)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.WORKOUT_NOT_FOUND));
+
+        Exercise exercise = repository.findByIdAndWorkoutId(exerciseId,workoutId).orElseThrow(()-> new ResourceNotFoundException(ErrorMessage.EXERCISE_NOT_FOUND));
+
+        return new ExerciseResponseDto(
+                exercise.getId(),
+                exercise.getName(),
+                exercise.getMuscleGroup(),
+                exercise.getSets(),
+                exercise.getRepetitions()
+        );
     }
 }
