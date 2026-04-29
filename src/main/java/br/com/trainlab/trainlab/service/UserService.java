@@ -4,6 +4,7 @@ import br.com.trainlab.trainlab.dto.user.UserRequestDto;
 import br.com.trainlab.trainlab.dto.user.UserResponseDto;
 import br.com.trainlab.trainlab.dto.user.UserUpdateRequestDto;
 import br.com.trainlab.trainlab.exception.BusinessException;
+import br.com.trainlab.trainlab.exception.ErrorMessage;
 import br.com.trainlab.trainlab.exception.ResourceNotFoundException;
 import br.com.trainlab.trainlab.model.User;
 import br.com.trainlab.trainlab.repository.UserRepository;
@@ -48,19 +49,20 @@ public class UserService {
 
     //------UPDATE USER--------\\
 
-    public UserResponseDto updateUser(Long id, UserUpdateRequestDto dto) {
+    public UserResponseDto updateUser(String email, UserUpdateRequestDto dto) {
 
-        if (repository.existsByEmailAndIdNot(dto.email(), id)) {
+        User user = repository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.USER_NOT_FOUND));
+
+        if (repository.existsByEmailAndIdNot(dto.email(), user.getId())) {
             throw new BusinessException("Email já cadastrado");
         }
-
-        User user = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         user.setName(dto.name());
         user.setEmail(dto.email());
 
         repository.save(user);
+
         return new UserResponseDto(
                 user.getId(),
                 user.getName(),
@@ -70,11 +72,23 @@ public class UserService {
 
     //------DELETE USER--------\\
 
-    public void deleteUser(Long id) {
+    public void deleteUser(String email) {
 
-        User user = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+        User user = repository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         repository.delete(user);
+    }
+
+    public UserResponseDto getMe(String email) {
+
+        User user = repository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.USER_NOT_FOUND));
+
+        return new UserResponseDto(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
+        );
     }
 }

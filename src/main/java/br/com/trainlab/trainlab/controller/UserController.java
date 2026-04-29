@@ -3,7 +3,6 @@ package br.com.trainlab.trainlab.controller;
 import br.com.trainlab.trainlab.dto.user.UserRequestDto;
 import br.com.trainlab.trainlab.dto.user.UserResponseDto;
 import br.com.trainlab.trainlab.dto.user.UserUpdateRequestDto;
-import br.com.trainlab.trainlab.security.JwtService;
 import br.com.trainlab.trainlab.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,51 +18,42 @@ public class UserController {
     @Autowired
     private UserService service;
 
-    @Autowired
-    private JwtService jwtService;
+    private String getAuthenticatedUserEmail() {
+        return SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+    }
 
     //------CREATE USER--------\\
 
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserRequestDto dto) {
-        UserResponseDto response = service.createUser(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createUser(dto));
+    }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    //------GET USER LOGADO--------\\
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDto> getMe() {
+        String email = getAuthenticatedUserEmail();
+        return ResponseEntity.ok(service.getMe(email));
     }
 
     //------UPDATE USER--------\\
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody @Valid UserUpdateRequestDto dto) {
-        UserResponseDto response = service.updateUser(id, dto);
-
-        return ResponseEntity.ok(response);
+    @PutMapping("/me")
+    public ResponseEntity<UserResponseDto> updateUser(@RequestBody @Valid UserUpdateRequestDto dto) {
+        String email = getAuthenticatedUserEmail();
+        return ResponseEntity.ok(service.updateUser(email, dto));
     }
 
     //------DELETE USER--------\\
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        service.deleteUser(id);
-
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteUser() {
+        String email = getAuthenticatedUserEmail();
+        service.deleteUser(email);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/test-token")
-    public String testToken() {
-        return jwtService.generateToken("gustavo@email.com");
-    }
-
-    @GetMapping("/test-extract")
-    public String testExtract(@RequestParam String token) {
-        return jwtService.extractEmail(token);
-    }
-
-    @GetMapping("/me")
-    public String me() {
-        return SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
     }
 }

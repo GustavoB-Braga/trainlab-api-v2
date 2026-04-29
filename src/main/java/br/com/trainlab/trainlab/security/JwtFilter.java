@@ -1,5 +1,6 @@
 package br.com.trainlab.trainlab.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,15 +33,36 @@ public class JwtFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
 
             String token = header.substring(7);
-            String email = jwtService.extractEmail(token);
 
-            var auth = new UsernamePasswordAuthenticationToken(
-                    email,
-                    null,
-                    List.of()
-            );
+            try {
+                String email = jwtService.extractEmail(token);
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
+                var auth = new UsernamePasswordAuthenticationToken(
+                        email,
+                        null,
+                        List.of()
+                );
+
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+            } catch (ExpiredJwtException e) {
+
+                SecurityContextHolder.clearContext();
+
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setContentType("application/json");
+
+                response.getWriter().write("""
+                            {
+                              "status": 403,
+                              "error": "TOKEN_EXPIRED",
+                              "message": "Token expirado"
+                            }
+                        """);
+
+                response.getWriter().flush();
+                return;
+            }
         }
 
         filterChain.doFilter(request, response);

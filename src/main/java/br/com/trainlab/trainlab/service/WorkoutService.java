@@ -4,6 +4,7 @@ import br.com.trainlab.trainlab.dto.exercise.ExerciseResponseDto;
 import br.com.trainlab.trainlab.dto.workout.WorkoutDetailResponseDto;
 import br.com.trainlab.trainlab.dto.workout.WorkoutRequestDto;
 import br.com.trainlab.trainlab.dto.workout.WorkoutResponseDto;
+import br.com.trainlab.trainlab.exception.ErrorMessage;
 import br.com.trainlab.trainlab.exception.ResourceNotFoundException;
 import br.com.trainlab.trainlab.model.User;
 import br.com.trainlab.trainlab.model.Workout;
@@ -27,7 +28,7 @@ public class WorkoutService {
     public WorkoutResponseDto createWorkout(String email, @Valid WorkoutRequestDto dto) {
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         Workout workout = new Workout();
         workout.setName(dto.name());
@@ -66,7 +67,7 @@ public class WorkoutService {
 
     public WorkoutDetailResponseDto getWorkoutDetail(String email, Long workoutId) {
         Workout workout = repository.findByIdAndUserEmail(workoutId, email)
-                .orElseThrow(() -> new ResourceNotFoundException("Workout não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.WORKOUT_NOT_FOUND));
 
         List<ExerciseResponseDto> exercises = workout.getExercises()
                 .stream()
@@ -93,7 +94,7 @@ public class WorkoutService {
     public WorkoutResponseDto updateWorkout(String email, Long workoutId, @Valid WorkoutRequestDto dto) {
 
         Workout workout = repository.findByIdAndUserEmail(workoutId, email)
-                .orElseThrow(() -> new ResourceNotFoundException("Workout não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.WORKOUT_NOT_FOUND));
 
         workout.setName(dto.name());
         workout.setDescription(dto.description());
@@ -115,7 +116,7 @@ public class WorkoutService {
     public void deleteWorkout(String email, Long workoutId) {
 
         Workout workout = repository.findByIdAndUserEmail(workoutId, email)
-                .orElseThrow(() -> new ResourceNotFoundException("Workout não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.WORKOUT_NOT_FOUND));
 
         repository.delete(workout);
     }
