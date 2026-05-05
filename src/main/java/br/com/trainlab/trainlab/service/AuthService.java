@@ -24,16 +24,15 @@ public class AuthService {
     private JwtService jwtService;
 
     public String login(LoginRequestDto dto) {
-        User user = repository.findByEmail(dto.email()).orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.INVALID_CREDENTIALS));
+        User user = repository.findByEmail(dto.email()).orElseThrow(() -> new BusinessException(ErrorMessage.INVALID_CREDENTIALS));
 
         if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
-            throw new BusinessException("Usuário ou senha invalidos");
+            throw new BusinessException(ErrorMessage.INVALID_CREDENTIALS);
         }
 
         var token = jwtService.generateToken(user.getEmail());
         System.out.println("---------------------------------------------------");
-        System.out.println("Usuário Logado -- " + java.time.LocalDateTime.now());
-        System.out.println("ESTE É O TOKEN: " + token);
+        System.out.println("Usuário Logado -→ " + user.getEmail());
         System.out.println("---------------------------------------------------");
 
         return token;

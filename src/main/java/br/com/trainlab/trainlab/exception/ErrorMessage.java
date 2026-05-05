@@ -1,10 +1,14 @@
 package br.com.trainlab.trainlab.exception;
 
 public enum ErrorMessage {
+    //RESOURCE
     USER_NOT_FOUND("USER_NOT_FOUND", "Usuário não encontrado"),
     WORKOUT_NOT_FOUND("WORKOUT_NOT_FOUND", "Treino não encontrado"),
     EXERCISE_NOT_FOUND("EXERCISE_NOT_FOUND", "Exercício não encontrado"),
-    INVALID_CREDENTIALS("INVALID_CREDENTIALS", "Usuário ou senha invalidos");
+    //BUSINESS
+    INVALID_CREDENTIALS("INVALID_CREDENTIALS", "Usuário ou senha invalidos"),
+    DIFFERENT_PASSWORD("DIFERENT_PASSWORD", "As senhas não coincidem"),
+    EMAIL_ALREADY_REGISTERED("EMAIL_ALREADY_REGISTERED", "Email já cadastrado");
 
 
 
