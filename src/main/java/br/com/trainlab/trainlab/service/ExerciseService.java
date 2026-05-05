@@ -100,7 +100,7 @@ public class ExerciseService {
         Workout workout = workoutRepository.findByIdAndUserEmail(workoutId, email)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.WORKOUT_NOT_FOUND));
 
-        Exercise exercise = repository.findByIdAndWorkoutId(exerciseId,workoutId).orElseThrow(()-> new ResourceNotFoundException(ErrorMessage.EXERCISE_NOT_FOUND));
+        Exercise exercise = repository.findByIdAndWorkoutId(exerciseId, workoutId).orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.EXERCISE_NOT_FOUND));
 
         return new ExerciseResponseDto(
                 exercise.getId(),

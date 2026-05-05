@@ -5,7 +5,7 @@ import br.com.trainlab.trainlab.model.enums.MuscleGroup;
 public record ExerciseResponseDto(
         Long id,
         String name,
-        MuscleGroup muscleGroup,
+        MuscleGroup  muscleGroup,
         Integer sets,
         Integer repetitions
 ) {

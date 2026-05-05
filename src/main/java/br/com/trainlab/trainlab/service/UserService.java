@@ -9,6 +9,7 @@ import br.com.trainlab.trainlab.exception.ResourceNotFoundException;
 import br.com.trainlab.trainlab.model.User;
 import br.com.trainlab.trainlab.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +27,11 @@ public class UserService {
     public UserResponseDto createUser(UserRequestDto dto) {
 
         if (!dto.password().equals(dto.confirmPassword())) {
-            throw new BusinessException("As senhas não coincidem");
+            throw new BusinessException(ErrorMessage.DIFFERENT_PASSWORD);
         }
 
         if (repository.existsByEmail(dto.email())) {
-            throw new BusinessException("Email já cadastrado");
+            throw new BusinessException(ErrorMessage.EMAIL_ALREADY_REGISTERED);
         }
 
         User user = new User();
@@ -55,7 +56,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         if (repository.existsByEmailAndIdNot(dto.email(), user.getId())) {
-            throw new BusinessException("Email já cadastrado");
+            throw new BusinessException(ErrorMessage.EMAIL_ALREADY_REGISTERED);
         }
 
         user.setName(dto.name());

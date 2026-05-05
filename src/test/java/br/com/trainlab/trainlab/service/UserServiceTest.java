@@ -54,7 +54,7 @@ class UserServiceTest {
         var response = service.createUser(dto);
 
         assertNotNull(response);
-        assertEquals("Gustavo", response.nome());
+        assertEquals("Gustavo", response.name());
         assertEquals("teste@gmail.com", response.email());
 
         then(repository).should(times(1)).save(any(User.class));
@@ -96,7 +96,7 @@ class UserServiceTest {
         var response = service.updateUser("teste@gmail.com", dto);
 
         assertEquals(user.getId(), response.id());
-        assertEquals(user.getName(), response.nome());
+        assertEquals(user.getName(), response.name());
         assertEquals(user.getEmail(), response.email());
 
         then(repository).should(times(1)).save(user);
