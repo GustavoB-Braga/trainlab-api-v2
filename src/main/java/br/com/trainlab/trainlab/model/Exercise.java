@@ -34,7 +34,7 @@ public class Exercise {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "workout_id", nullable = false)
     private Workout workout;
 }
