@@ -1,6 +1,7 @@
 package br.com.trainlab.trainlab.model;
 
 import br.com.trainlab.trainlab.model.enums.MuscleGroup;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = {"workout"})
 @Table(name = "exercises")
 public class Exercise {
 
@@ -36,5 +37,6 @@ public class Exercise {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "workout_id", nullable = false)
+    @JsonBackReference
     private Workout workout;
 }

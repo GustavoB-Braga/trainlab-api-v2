@@ -2,6 +2,7 @@ package br.com.trainlab.trainlab.model;
 
 import br.com.trainlab.trainlab.model.enums.Level;
 import br.com.trainlab.trainlab.model.enums.WorkoutType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -14,7 +15,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"exercises", "user"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "workouts")
@@ -42,6 +43,7 @@ public class Workout {
     @ManyToOne
     private User user;
 
-    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Exercise> exercises = new ArrayList<>();
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<Exercise> exercises = new ArrayList<>();
 }

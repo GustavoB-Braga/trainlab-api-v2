@@ -10,6 +10,7 @@ import br.com.trainlab.trainlab.model.User;
 import br.com.trainlab.trainlab.model.Workout;
 import br.com.trainlab.trainlab.repository.UserRepository;
 import br.com.trainlab.trainlab.repository.WorkoutRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,6 +66,7 @@ public class WorkoutService {
                 )).toList();
     }
 
+    @Transactional
     public WorkoutDetailResponseDto getWorkoutDetail(String email, Long workoutId) {
         Workout workout = repository.findByIdAndUserEmail(workoutId, email)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.WORKOUT_NOT_FOUND));
