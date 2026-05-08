@@ -35,6 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = header.substring(7);
 
             try {
+
                 String email = jwtService.extractEmail(token);
 
                 var auth = new UsernamePasswordAuthenticationToken(
@@ -45,7 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
-            } catch (ExpiredJwtException e) {
+            } catch (Exception e) {
 
                 SecurityContextHolder.clearContext();
 
@@ -55,12 +56,14 @@ public class JwtFilter extends OncePerRequestFilter {
                 response.getWriter().write("""
                             {
                               "status": 403,
-                              "error": "TOKEN_EXPIRED",
-                              "message": "Token expirado"
+                              "error": "INVALID_TOKEN",
+                              "message": "Token inválido ou expirado"
                             }
                         """);
 
                 response.getWriter().flush();
+
+                e.printStackTrace();
                 return;
             }
         }
